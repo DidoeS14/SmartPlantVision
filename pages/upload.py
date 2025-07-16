@@ -43,14 +43,22 @@ def upload_view(page: ft.Page):
 
     return ft.View(
         route="/upload",
+        vertical_alignment=ft.MainAxisAlignment.CENTER,  # vertical centering
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # horizontal centering
         controls=[
-            ft.Text("Upload Image"),
-            ft.ElevatedButton(
-                "Pick Image",
-                on_click=lambda e: file_picker.pick_files(
-                    file_type=ft.FilePickerFileType.IMAGE
-                )
-            ),
-            image_display  # Show image here after picking
-        ],
+            ft.Column(
+                controls=[
+                    ft.Text("Upload Image", size=24, weight=ft.FontWeight.BOLD),
+                    ft.ElevatedButton(
+                        "Pick Image",
+                        on_click=lambda e: file_picker.pick_files(
+                            file_type=ft.FilePickerFileType.IMAGE
+                        )
+                    ),
+                    image_display
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            )
+        ]
     )

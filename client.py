@@ -1,4 +1,5 @@
 import flet as ft
+
 from pages.login import login_view
 from pages.register import register_view
 from pages.upload import upload_view
@@ -6,6 +7,14 @@ from pages.info import info_view
 
 def main(page: ft.Page):
     page.title = "Smart GV"
+
+    page.theme = ft.Theme(
+        color_scheme=ft.ColorScheme(
+            primary=ft.Colors.GREEN,
+            primary_container=ft.Colors.GREEN_200,# TODO: play around and choose nice scheme
+            # ...
+        ),
+    )
 
     # Route change handler must be defined before assigning it
     async def route_change(e):

@@ -47,4 +47,9 @@ def info_view(page: ft.Page):
     threading.Thread(target=fetch_data_background, daemon=True).start()
     asyncio.create_task(poll_data(page, info_text, loading, content_column, image_display))
 
-    return ft.View(route="/info", controls=page.controls)
+    return ft.View(
+        route="/info",
+        controls=page.controls,
+        vertical_alignment=ft.MainAxisAlignment.CENTER,
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+    )
