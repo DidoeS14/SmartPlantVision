@@ -15,7 +15,7 @@ def main(page: ft.Page):
             # ...
         ),
     )
-
+    # TODO: clean up the pages code , make a global file for definitions
     # Route change handler must be defined before assigning it
     async def route_change(e):
         page.views.clear()

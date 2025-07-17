@@ -37,8 +37,9 @@ async def poll_data(page: ft.Page, info_text: ft.Text, loading: ft.ProgressRing,
 def info_view(page: ft.Page):
     loading = ft.ProgressRing()
     info_text = ft.Text("Loading...")
+    back = ft.TextButton("Go Back", on_click=lambda e: page.go("/upload"))
     image_display = ft.Image(width=400, height=400, fit=ft.ImageFit.CONTAIN)
-    content_column = ft.Column([info_text, image_display], visible=False)
+    content_column = ft.Column([info_text, image_display, back], visible=False)
 
     page.controls.clear()
     page.controls.append(ft.Column([loading, content_column]))
