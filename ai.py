@@ -8,6 +8,10 @@ import timm
 import numpy as np
 import re
 
+from logger import setup_logger
+
+logger = setup_logger('SmartGV AI')
+
 
 # TODO: model to recognize different sorts
 # TODO: model to revognize stages of growth
@@ -37,15 +41,19 @@ class Classifier:
         self._load_classes()
         self._load_model()
 
+        logger.debug(f'Initialized classifier with {self.device}')
+
     def _load_classes(self):
         with open(self.classes_names_path, "r") as f:
             self.classes = [line.strip() for line in f.readlines()]
+        logger.debug(f'Loaded classes for {self.model_path}')
 
     def _load_model(self):
         self.model = timm.create_model("mobilenetv3_small_050", pretrained=False, num_classes=len(self.classes))
         self.model.load_state_dict(torch.load(self.model_path, map_location=self.device))
         self.model.to(self.device)
         self.model.eval()
+        logger.debug('Loaded model')
 
     def get_prediction(self):
         """
@@ -58,8 +66,10 @@ class Classifier:
                    str: Predicted class name.
         """
         if self.prediction:
+            logger.debug(f'Got predictions {self.prediction}')
             return self.prediction
         else:
+            logger.error('process_image() must be called first!')
             raise Exception('process_image() must be called first!')
 
     def process_image(self, img: cv2.imread):
@@ -79,6 +89,8 @@ class Classifier:
 
                Prints the predicted class.
         """
+
+        logger.debug('Processing the image...')
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         img = cv2.resize(img, (self.image_size, self.image_size))
         img = img.astype(np.float32) / 255.0  # Normalize to [0,1]
@@ -91,7 +103,7 @@ class Classifier:
             pred_index = output.argmax(1).item()
             pred_class = self.classes[pred_index]
 
-        print(f"Predicted class: {pred_class}")
+        logger.debug(f"Predicted class: {pred_class}")
         self.prediction = pred_class
 
 
@@ -120,6 +132,7 @@ class ModelHandler:
                 This value controls which handler method is called in the result() method.
         """
         self.purpose = purpose
+        logger.debug(f'Purpose is set to {self.purpose}')
 
     def result(self, arg=None):
         """
@@ -137,14 +150,17 @@ class ModelHandler:
                 Calls the handler associated with self.purpose, passing arg if provided.
         """
         if self.purpose is None:
+            logger.error('Purpose is not set! Please use .set_purpose() before using .result().')
             raise ValueError('Purpose is not set! Please use .set_purpose() before using .result().')
 
         try:
             handler = self.handlers[self.purpose]
         except KeyError:
+            logger.error(f"Unknown purpose: {self.purpose}")
             raise ValueError(f"Unknown purpose: {self.purpose}")
 
         # Call with arg if it’s not None, otherwise without args
+        logger.debug('Calling handler function...')
         if arg is not None:
             return handler(arg)
         return handler()
@@ -165,12 +181,15 @@ class ModelHandler:
         """
         parts = re.findall(r'[A-Z][a-z]*', string)
         if len(parts) != 3:
+            logger.debug(f'Expected 3 CamelCase components, got {len(parts)}: {parts}')
             raise ValueError(f'Expected 3 CamelCase components, got {len(parts)}: {parts}')
         status, plant, type_ = parts
+        logger.debug('Finished handeling SPT')
         return status, plant, type_
 
     @staticmethod
     def _test():
+        logger.debug('Calling a test method')
         return 'test method'
 
 
@@ -204,10 +223,8 @@ class Processor:
     def read_img(self, img_path: str):
         self.input = cv2.imread(img_path)
 
-    def from_bytes_to_cv2(self, img_bytes: bytes):
-        # not sure if needed and how exactly will be done
-        # self.input = ??
-        pass
+    def set_img(self, image: cv2.imread):
+        self.input = image
 
     def run(self):
         """
@@ -231,6 +248,8 @@ class Processor:
         self.data['Type'] = type_
         self.data['Eatable'] = 'Yes' if status == 'Fresh' else 'No'
 
+        logger.debug('Collected all data so far')
+
         #TODO: here call the models in the same manner in order to fill the rest of the data.
         # Make sure to keep the dataset structure the same for different models
 
@@ -250,6 +269,7 @@ class Processor:
         """
         # handler for unfilled data
         filled_data = {k: v for k, v in self.data.items() if v != ''}
+        logger.debug('Returning filled data')
         return filled_data
 
     def _create_classifier_and_set_handler(self, model: int):
@@ -262,6 +282,7 @@ class Processor:
           Returns:
               Classifier: An initialized classifier with the model and class names loaded.
         """
+        logger.debug('Creating the classifier and setting the model handler purpose...')
         self.model_handler.set_purpose(model)
         model_path = Processor.models[model]['model_path']
         classes_path = Processor.models[model]['classes_path']
