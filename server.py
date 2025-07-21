@@ -37,7 +37,7 @@ def upload():
             logger.error('Failed to decode image')
             return jsonify({'error': 'Failed to decode image'}), 400
 
-        shared_data['latest_img'] = img
+        shared_data['latest_img'] = img # TODO: share user and image, so you know whom you are sending what
         logger.debug('Shared image between endpoints')
 
         return jsonify({'status': 'Image displayed successfully'})
@@ -82,3 +82,7 @@ def info():
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)
+
+
+# TODO: fix bug where if you send a random image it shows you the data for the latest image that the model could handle
+# TODO: fix if you load one image after another it will show the first image unless you load the second image twice

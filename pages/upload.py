@@ -8,12 +8,13 @@ import requests
 import flet as ft
 
 
-url = "http://localhost:8000/upload" # TODO: it is hardcoded for now here, later take it from config or smth
+url = "http://localhost:8000/upload"  # TODO: it is hardcoded for now here, later take it from config or smth
 
 
 def send_image(image_path: str):
     with open(image_path, "rb") as f:
         files = {"file": (image_path.split("/")[-1], f, "image/jpeg")}  # or "image/png"
+        # TODO: send name or id of the user so the data for the given image can be returned to the same user
         response = requests.post(url, files=files)
 
     # Print server response
@@ -32,6 +33,7 @@ def upload_view(page: ft.Page):
         if data_dict.get("files"):
             file_path = data_dict["files"][0]["path"]
             print(f"File path: {file_path}")
+            # TODO: freeze interface for some time
             response = send_image(file_path)
             if response == 200:
                 page.go("/info")

@@ -31,10 +31,20 @@ def info_view(page: ft.Page):
 
     # Characteristics table (below image)
     characteristics_column = ft.Column(spacing=5, horizontal_alignment=ft.CrossAxisAlignment.CENTER, width=200)
+    summary_text = ft.Text(
+        value="",
+        size=14,
+        italic=True,
+        text_align=ft.TextAlign.CENTER,
+        max_lines=5,
+        overflow=ft.TextOverflow.ELLIPSIS,
+        # soft_wrap=True,
+        width=400,  # Same width as column or slightly less
+    )
 
     # Main content column with all elements except loading
     content_column = ft.Column(
-        controls=[plant_title, image_display, characteristics_column, back],
+        controls=[plant_title, image_display, characteristics_column, summary_text, back],
         visible=False,
         alignment=ft.MainAxisAlignment.CENTER,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -62,7 +72,9 @@ def info_view(page: ft.Page):
 
                 # Add all other characteristics below image (excluding Plant)
                 for key, val in data_store["data"].items():
-                    if key != "Plant":
+                    if key == "Summary":
+                        summary_text.value = str(val)
+                    elif key != "Plant":
                         characteristics_column.controls.append(
                             ft.Row([
                                 ft.Text(f"{key}:", weight=ft.FontWeight.BOLD, width=100),
