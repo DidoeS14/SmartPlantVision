@@ -64,7 +64,7 @@ def analyze_view(page: ft.Page):
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
     )
     loading = ft.ProgressRing()
-    loading.value = 'Analyzing image'
+    loading.visible = False
 
     # Plant title text (large font)
     plant_title = ft.Text("", size=30, weight=ft.FontWeight.BOLD)
@@ -80,13 +80,13 @@ def analyze_view(page: ft.Page):
         size=14,
         italic=True,
         text_align=ft.TextAlign.CENTER,
-        max_lines=5,
+        max_lines=20,
         overflow=ft.TextOverflow.ELLIPSIS,
         # soft_wrap=True,
         width=400,  # Same width as column or slightly less
     )
 
-    # Main content column with all elements except loading
+    # Main content column with all elements from server. Make it visible only when loading is not visible
     content_column = ft.Column(
         controls=[back, plant_title, image_display, characteristics_column, summary_text],
         visible=False,
@@ -94,7 +94,15 @@ def analyze_view(page: ft.Page):
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         spacing=15,
     )
-    info_controls = ft.Column([loading, content_column], visible=False)
+    info_controls = ft.Container(
+        content=ft.Column(
+            controls=[loading, content_column],
+            alignment=ft.MainAxisAlignment.CENTER,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            spacing=20,
+        ),
+        expand=True  # Optional: lets it grow to available height
+    )
 
 
     def pick_file_result(e):
@@ -173,11 +181,21 @@ def analyze_view(page: ft.Page):
 
     return ft.View(
         route="/analyze",
-        vertical_alignment=ft.MainAxisAlignment.CENTER,  # vertical centering
-        horizontal_alignment=ft.CrossAxisAlignment.CENTER,  # horizontal centering
         controls=[
-            error_controls,
-            upload_controls,
-            info_controls
+            ft.Container(
+                expand=True,
+                alignment=ft.alignment.center,
+                content=ft.Column(
+                    expand=True,
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                    scroll=ft.ScrollMode.AUTO,  # Enables scrolling when needed
+                    controls=[
+                        error_controls,
+                        upload_controls,
+                        info_controls,
+                    ],
+                ),
+            )
         ]
     )

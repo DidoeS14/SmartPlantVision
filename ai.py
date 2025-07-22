@@ -243,6 +243,8 @@ class Processor:
         spt_classifier.process_image(self.input)
         spt = spt_classifier.get_prediction()
 
+        #TODO: check how certain is the model and if it's below 60% announce it with a warning
+
         status, plant, type_ = self.model_handler.result(spt)
         self.data['Status'] = status
         self.data['Plant'] = plant
