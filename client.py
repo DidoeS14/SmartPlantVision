@@ -4,6 +4,7 @@ from pages.login import login_view
 from pages.register import register_view
 from pages.upload import upload_view
 from pages.info import info_view
+from pages.analyze import analyze_view
 
 def main(page: ft.Page):
     page.title = "Smart GV"
@@ -27,11 +28,13 @@ def main(page: ft.Page):
             page.views.append(upload_view(page))
         elif page.route == "/info":
             page.views.append(info_view(page))
+        elif page.route == "/analyze":
+            page.views.append(analyze_view(page))
         else:
             page.views.append(ft.View(route=page.route, controls=[ft.Text("Page not found")]))
         page.update()
 
     page.on_route_change = route_change
-    page.go("/login")
+    page.go("/login") # if not logged in, otherwise go to analyse
 
 ft.app(target=main, view=ft.AppView.FLET_APP)

@@ -7,7 +7,7 @@ import flet as ft
 def login_view(page: ft.Page):
     def on_login(e):
         # Validate credentials (mock)
-        page.go("/upload")
+        page.go("/analyze")
 
     return ft.View(
         route="/login",
