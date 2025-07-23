@@ -1,6 +1,7 @@
 import pyrebase
 
 import flet as ft
+import sensitive    # contains sensitive data, for that reason it is not included in the project
 
 
 class Debug:
@@ -19,16 +20,7 @@ class URLs:
 
 class Firebase:
     """Used for working with firebase"""
-    firebaseConfig = {
-        'apiKey': "AIzaSyBjZ7e0nMHixZ3E-FtoNG42SS1RyI0m2SM",
-        'authDomain': "smart-plant-vision.firebaseapp.com",
-        'projectId': "smart-plant-vision",
-        'storageBucket': "smart-plant-vision.firebasestorage.app",
-        'messagingSenderId': "173088318294",
-        'appId': "1:173088318294:web:84e07f546c760f34862cf7",
-        'measurementId': "G-9E9SV36RH7",
-        'databaseURL': "https://smart-plant-vision-default-rtdb.firebaseio.com/"
-    }
+    firebaseConfig = sensitive.firebaseConfig   # contains config data with api for firebase (not included in project)
 
     app = pyrebase.initialize_app(firebaseConfig)
     auth = app.auth()
