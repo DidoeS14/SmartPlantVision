@@ -9,9 +9,8 @@ from logger import setup_logger
 
 app = Flask(__name__)
 
-# shared_data = {}
 
-logger = setup_logger('SmartGV Server')
+logger = setup_logger('SmartPV Server')
 
 @app.route('/analyze', methods=['POST','GET'])
 def analyze():
@@ -64,7 +63,3 @@ def analyze():
 
 if __name__ == '__main__':
     app.run(debug=True, port=8000)
-
-
-# TODO: fix bug where if you send a random image it shows you the data for the latest image that the model could handle
-# TODO: fix if you load one image after another it will show the first image unless you load the second image twice

@@ -3,11 +3,12 @@ import requests
 import threading
 import flet as ft
 
-url = "http://localhost:8000/analyze"  # TODO: config later
-
+from public import URLs, StandardControls
 
 def send_image(image_path: str):
     """Send image file to the server and return JSON response."""
+
+    url = URLs.base + URLs.analyze
     try:
         with open(image_path, "rb") as f:
             files = {"file": (image_path.split("/")[-1], f, "image/jpeg")}
@@ -21,20 +22,20 @@ def send_image(image_path: str):
         return {"status": 500}
 
 
-def create_error_controls(on_close):
-    error_text = ft.Text("", size=12, weight=ft.FontWeight.BOLD, color="red")
-    close_button = ft.IconButton(
-        icon=ft.Icons.CLOSE,
-        tooltip="Close",
-        on_click=on_close,
-        icon_color=ft.Colors.RED,
-    )
-    error_controls = ft.Row(
-        controls=[error_text, close_button],
-        alignment=ft.MainAxisAlignment.CENTER,
-        visible=False,
-    )
-    return error_controls, error_text
+# def create_error_controls(on_close):
+#     error_text = ft.Text("", size=12, weight=ft.FontWeight.BOLD, color="red")
+#     close_button = ft.IconButton(
+#         icon=ft.Icons.CLOSE,
+#         tooltip="Close",
+#         on_click=on_close,
+#         icon_color=ft.Colors.RED,
+#     )
+#     error_controls = ft.Row(
+#         controls=[error_text, close_button],
+#         alignment=ft.MainAxisAlignment.CENTER,
+#         visible=False,
+#     )
+#     return error_controls, error_text
 
 
 def create_upload_controls(on_pick_image):
@@ -59,16 +60,16 @@ def analyze_view(page: ft.Page):
         content_column.visible = False
         page.update()
 
-    def close_error(e):
-        if error_controls.visible:
-            error_controls.visible = False
-            page.update()
+    # def close_error(e):
+    #     if error_controls.visible:
+    #         error_controls.visible = False
+    #         page.update()
 
     def on_pick_image(e):
         file_picker.pick_files(file_type=ft.FilePickerFileType.IMAGE)
 
     # Create controls
-    error_controls, error_text = create_error_controls(close_error)
+    error_controls, error_text = StandardControls.create_error_controls(page)
     upload_controls = create_upload_controls(on_pick_image)
     loading = ft.ProgressRing(visible=False)
 

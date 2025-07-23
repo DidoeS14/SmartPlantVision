@@ -6,8 +6,12 @@ from pages.register import register_view
 # from pages.info import info_view
 from pages.analyze import analyze_view
 
+
+# TODO get logo from server. The server should serve it from a contnets page
+
+#TODO: auth memory token in future
 def main(page: ft.Page):
-    page.title = "Smart GV"
+    page.title = "Smart PV"
 
     page.theme = ft.Theme(
         color_scheme=ft.ColorScheme(

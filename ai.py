@@ -250,7 +250,7 @@ class Processor:
         self.data['Plant'] = plant
         self.data['Type'] = type_
         self.data['Eatable'] = 'Yes' if status == 'Fresh' else 'No'
-        self.data['Summary'] = self.get_wikipedia_summary_for_plant()
+        self.data['Summary'] = self._get_wikipedia_summary_for_plant()
 
         logger.debug('Collected all data so far')
 
@@ -292,7 +292,7 @@ class Processor:
         classes_path = Processor.models[model]['classes_path']
         return Classifier(model=model_path, classes=classes_path)
 
-    def get_wikipedia_summary_for_plant(self):
+    def _get_wikipedia_summary_for_plant(self):
         """
         Gets a summary from wikipedia about the given plant.
         NOTE: self.data['Plant'] has to be set first!
@@ -307,6 +307,13 @@ class Processor:
             # print(data)  # Debug full response
             return data.get("extract")
         return None
+
+    def _collect_image_for_dataset(self):
+        pass
+        #TODO: save the image in some folder like 'collected_data'
+        # if certainty is below 90% but above 70% put it in a folder corresponding to what it was detected
+        # if certanty is below 70% get it saved in a subfolder called 'unsure'
+        # put disclaimer when registering that app will collect data on thee conditions
 
 
 if __name__ == '__main__':
