@@ -7,6 +7,7 @@ from public import Firebase, StandardControls
 
 
 def register_view(page: ft.Page):
+    logo = StandardControls.create_logo_title()
     text = ft.Text("Register", size=24, weight="bold")
     name = ft.TextField(label="Name", width=300)
     family = ft.TextField(label="Family Name", width=300)
@@ -55,6 +56,7 @@ def register_view(page: ft.Page):
             ft.Container(
                 content=ft.Column(
                     [
+                        logo,
                         text,
                         error,
                         name,

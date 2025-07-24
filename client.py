@@ -28,6 +28,8 @@ def main(page: ft.Page):
             # brightness=ft.Brightness.DARK,  # Dark theme brightness
         )
     )
+    # page.theme = ft.Theme(color_scheme_seed=ft.Colors.GREEN)
+
 
     # TODO: clean up the pages code
     # Route change handler must be defined before assigning it

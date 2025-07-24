@@ -48,10 +48,15 @@ def analyze_view(page: ft.Page):
         file_picker.pick_files(file_type=ft.FilePickerFileType.IMAGE)
 
     # Create controls
+    logo = StandardControls.create_logo_title(has_text=True)
     error_controls, error_text = StandardControls.create_error_controls(page)
     warning_controls, warning_text = StandardControls.create_warning_controls(page)
     upload_controls = create_upload_controls(on_pick_image)
     loading = ft.ProgressRing(visible=False)
+
+    page.dialog = StandardControls.create_popup(page, 'Warning!',
+                                               'This app collects user data for improving its services. '
+                                               'By pressing OK you agree to share your data in order to use this app!')
 
     plant_title = ft.Text("", size=30, weight=ft.FontWeight.BOLD)
     back = ft.TextButton("Go Back", on_click=go_to_upload)
@@ -68,7 +73,7 @@ def analyze_view(page: ft.Page):
     )
 
     content_column = ft.Column(
-        controls=[back, plant_title, image_display, characteristics_column, summary_text],
+        controls=[plant_title, image_display, characteristics_column, summary_text, back],
         visible=False,
         alignment=ft.MainAxisAlignment.CENTER,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -164,6 +169,9 @@ def analyze_view(page: ft.Page):
     file_picker = ft.FilePicker(on_result=pick_file_result)
     page.overlay.append(file_picker)
 
+    page.dialog.open = True
+    page.update()
+
     return ft.View(
         route="/analyze",
         controls=[
@@ -176,6 +184,8 @@ def analyze_view(page: ft.Page):
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                     scroll=ft.ScrollMode.AUTO,
                     controls=[
+                        page.dialog,
+                        logo,
                         error_controls,
                         warning_controls,
                         upload_controls,

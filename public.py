@@ -83,3 +83,44 @@ class StandardControls:
         )
 
         return controls, text  # text is returned also for better control
+
+    @staticmethod
+    def create_logo_title(has_text: bool = False):
+        """
+        Creates a logo image element for the given page
+        :param has_text: Creates the version without the text
+        :return:
+        """
+        source = 'assets/title.png' if has_text else 'assets/logo.png'
+        image = ft.Image(src=source, width=250)
+        row = ft.Row(
+            controls=[image],
+            alignment=ft.MainAxisAlignment.CENTER,
+        )
+        return row
+
+    @staticmethod
+    def create_popup(page, title: str, content: str):
+        """
+        Creates a customizable popup aler. It has to be assigned to page.dialog and be displayed in the page controls
+        :param page: page you are working with
+        :param title: Title of the popup
+        :param content: Text inside of the popup
+        :return:
+        """
+
+        # Function to close the popup
+        def close_popup(e):
+            dialog.open = False
+            page.update()
+
+        dialog = ft.AlertDialog(
+            title=ft.Text(title),
+            content=ft.Text(content),
+            actions=[
+                ft.TextButton("OK", on_click=close_popup)
+            ],
+            modal=True
+        )
+
+        return dialog

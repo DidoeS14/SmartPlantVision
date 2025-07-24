@@ -7,6 +7,7 @@ from public import Firebase, StandardControls, Debug
 
 
 def login_view(page: ft.Page):
+    logo = StandardControls.create_logo_title()
     error, error_text = StandardControls.create_error_controls(page)
     title = ft.Text("Login", size=24, weight="bold")
     email = ft.TextField(label="Email", width=300)
@@ -26,6 +27,7 @@ def login_view(page: ft.Page):
             return
 
         try:
+            # TODO: later can add options to retrieve forgotten password using firebase
             user = Firebase.auth.sign_in_with_email_and_password(email=email.value, password=password.value)
             page.go('/analyze')
 
@@ -42,6 +44,7 @@ def login_view(page: ft.Page):
             ft.Container(
                 content=ft.Column(
                     [
+                        logo,
                         title,
                         error,
                         email,
