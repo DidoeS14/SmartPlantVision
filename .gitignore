@@ -1,4 +1,5 @@
 /datasets
 /google_colab
 /models
+/collected_data
 sensitive.py

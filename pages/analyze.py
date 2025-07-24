@@ -22,22 +22,6 @@ def send_image(image_path: str):
         return {"status": 500}
 
 
-# def create_error_controls(on_close):
-#     error_text = ft.Text("", size=12, weight=ft.FontWeight.BOLD, color="red")
-#     close_button = ft.IconButton(
-#         icon=ft.Icons.CLOSE,
-#         tooltip="Close",
-#         on_click=on_close,
-#         icon_color=ft.Colors.RED,
-#     )
-#     error_controls = ft.Row(
-#         controls=[error_text, close_button],
-#         alignment=ft.MainAxisAlignment.CENTER,
-#         visible=False,
-#     )
-#     return error_controls, error_text
-
-
 def create_upload_controls(on_pick_image):
     upload_controls = ft.Column(
         controls=[
@@ -60,16 +44,12 @@ def analyze_view(page: ft.Page):
         content_column.visible = False
         page.update()
 
-    # def close_error(e):
-    #     if error_controls.visible:
-    #         error_controls.visible = False
-    #         page.update()
-
     def on_pick_image(e):
         file_picker.pick_files(file_type=ft.FilePickerFileType.IMAGE)
 
     # Create controls
     error_controls, error_text = StandardControls.create_error_controls(page)
+    warning_controls, warning_text = StandardControls.create_warning_controls(page)
     upload_controls = create_upload_controls(on_pick_image)
     loading = ft.ProgressRing(visible=False)
 
@@ -144,11 +124,16 @@ def analyze_view(page: ft.Page):
                     characteristics_column.controls.clear()
                     for key, val in plant_data.items():
                         if key not in ("Plant", "Summary"):
+                            color = 'white'
+                            if key == 'Warning':
+                                color = 'orange'
+                            if key == 'Error':
+                                color = 'red' # TODO: when error is received it is a bit offseted
                             characteristics_column.controls.append(
                                 ft.Row(
                                     [
-                                        ft.Text(f"{key}:", weight=ft.FontWeight.BOLD, width=100),
-                                        ft.Text(str(val)),
+                                        ft.Text(f"{key}:", weight=ft.FontWeight.BOLD, width=100, color=color),
+                                        ft.Text(str(val), ),
                                     ]
                                 )
                             )
@@ -192,6 +177,7 @@ def analyze_view(page: ft.Page):
                     scroll=ft.ScrollMode.AUTO,
                     controls=[
                         error_controls,
+                        warning_controls,
                         upload_controls,
                         info_controls,
                     ],

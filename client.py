@@ -7,9 +7,7 @@ from pages.register import register_view
 from pages.analyze import analyze_view
 
 
-# TODO get logo from server. The server should serve it from a contnets page
-
-#TODO: auth memory token in future
+# TODO: auth memory token in future
 def main(page: ft.Page):
     page.title = "Smart PV"
 
@@ -31,9 +29,7 @@ def main(page: ft.Page):
         )
     )
 
-    # TODO: remove old pages and end points
-    # TODO: clean the code
-    # TODO: clean up the pages code , make a global file for definitions
+    # TODO: clean up the pages code
     # Route change handler must be defined before assigning it
     async def route_change(e):
         page.views.clear()
@@ -52,6 +48,7 @@ def main(page: ft.Page):
         page.update()
 
     page.on_route_change = route_change
-    page.go("/login") # if not logged in, otherwise go to analyse
+    page.go("/login")  # if not logged in, otherwise go to analyse
 
-ft.app(target=main, view=ft.AppView.FLET_APP)
+
+ft.app(target=main, view=ft.AppView.FLET_APP, assets_dir='assets', )

@@ -1,6 +1,9 @@
 """
 Place to contain the ai computer vision
 """
+import datetime
+import os
+
 import cv2
 import torch
 import timm
@@ -9,13 +12,14 @@ import numpy as np
 import re
 import requests
 from logger import setup_logger
+from public import Config
 
 logger = setup_logger('SmartGV AI')
 
 
 # TODO: model to recognize different sorts
-# TODO: model to revognize stages of growth
-# TODO: extract any other data somehow from the image
+# TODO: model to recognize stages of growth
+# TODO: extract any other data from the image
 
 class Classifier:
     def __init__(self, model: str, classes: str):
@@ -37,6 +41,7 @@ class Classifier:
         self.classes = None
         self.model = None
         self.prediction = None
+        self.confidence = None
 
         self._load_classes()
         self._load_model()
@@ -69,9 +74,18 @@ class Classifier:
             logger.debug(f'Got predictions {self.prediction}')
             return self.prediction
         else:
-            logger.error('process_image() must be called first!')
-            raise Exception('process_image() must be called first!')
+            error = 'process_image( must be called first!'
+            logger.error(error)
+            raise Exception(error)
 
+    def get_confidence(self):
+        if self.confidence:
+            logger.debug(f'Got confidence {self.confidence}')
+            return self.confidence
+        else:
+            error = 'process_image( must be called first!'
+            logger.error(error)
+            raise Exception(error)
     def process_image(self, img: cv2.imread):
         """
                Preprocess an input image and run the model to get a prediction.
@@ -100,11 +114,14 @@ class Classifier:
 
         with torch.no_grad():
             output = self.model(img_tensor)
+            probabilities = torch.nn.functional.softmax(output, dim=1) # Convert logits to probabilities
             pred_index = output.argmax(1).item()
+            confidence = probabilities[0][pred_index].item() * 100
             pred_class = self.classes[pred_index]
 
         logger.debug(f"Predicted class: {pred_class}")
         self.prediction = pred_class
+        self.confidence = confidence
 
 
 class ModelHandler:
@@ -214,7 +231,9 @@ class Processor:
             'Time till fully grown': '',  # might need a growth determining model
             'Time past eatable': '',
             'Recommendations': '',  # maybe try to use again wikipedia to get some
-            'Summary': ''
+            'Summary': '',
+            'Warning': '',  # for cases when accuracy is low
+            'Error': '',    # for cases when accuracy is too low or some error happened
             # TODO: add more in future
         }
 
@@ -242,17 +261,7 @@ class Processor:
         spt_classifier = self._create_classifier_and_set_handler(ModelHandler.STATUS_PLANT_TYPE)
         spt_classifier.process_image(self.input)
         spt = spt_classifier.get_prediction()
-
-        #TODO: check how certain is the model and if it's below 60% announce it with a warning
-
-        status, plant, type_ = self.model_handler.result(spt)
-        self.data['Status'] = status
-        self.data['Plant'] = plant
-        self.data['Type'] = type_
-        self.data['Eatable'] = 'Yes' if status == 'Fresh' else 'No'
-        self.data['Summary'] = self._get_wikipedia_summary_for_plant()
-
-        logger.debug('Collected all data so far')
+        spt_confidence = spt_classifier.get_confidence()
 
         #TODO: here call the models in the same manner in order to fill the rest of the data.
         # Make sure to keep the dataset structure the same for different models
@@ -260,6 +269,28 @@ class Processor:
         # anotother_classifier = self._create_classifier_and_set_handler(ModelHandler.ANOTHER)
         # anotother_classifier.process_image(self.input)
         # another = anotother_classifier.get_prediction()
+
+        if spt_confidence <= Config.unnaceptable_accuracy:
+            logger.debug('Accuracy is too low! No data will be extracted!')
+            self.data['Error'] = 'Model failed to extract data from this image!'
+            self._collect_image_for_dataset()
+            return
+
+        status, plant, type_ = self.model_handler.result(spt)
+        self.data['Status'] = status
+        self.data['Plant'] = plant
+        self.data['Type'] = type_
+        self.data['Eatable'] = 'Yes' if status == 'Fresh' else 'No'
+        self.data['Summary'] = self._get_wikipedia_summary_for_plant()
+        self.data['Warning'] = \
+            f'Information might be wrong! Model confidence is ' \
+            f'{spt_confidence}%' if spt_confidence < Config.minimum_confident_accuracy else ''
+
+        logger.debug('Collected all data so far')
+
+        if spt_confidence < Config.high_accuracy:
+            self._collect_image_for_dataset(folder=f'{status}{plant}{type_}')
+
 
     def get_data(self):
         """
@@ -308,12 +339,28 @@ class Processor:
             return data.get("extract")
         return None
 
-    def _collect_image_for_dataset(self):
-        pass
-        #TODO: save the image in some folder like 'collected_data'
-        # if certainty is below 90% but above 70% put it in a folder corresponding to what it was detected
-        # if certanty is below 70% get it saved in a subfolder called 'unsure'
-        # put disclaimer when registering that app will collect data on thee conditions
+    def _collect_image_for_dataset(self, folder: str = 'Unknown'):
+        """
+        Saves the input image into a subfolder under 'collected_data'.
+
+        Args:
+            folder (str): The subfolder name where the image will be saved.
+        """
+        base_path = 'collected_data'
+        subfolder_path = os.path.join(base_path, folder)
+        os.makedirs(subfolder_path, exist_ok=True)
+
+        timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+        image_name = f'{timestamp}.jpg'
+        save_path = os.path.join(subfolder_path, image_name)
+
+        if self.input is not None:
+            cv2.imwrite(save_path, self.input)
+            logger.debug(f"Image saved at {save_path}")
+        else:
+            logger.error("No image loaded. Cannot save.")
+
+        # TODO: also clean up the code and write a readme
 
 
 if __name__ == '__main__':
@@ -325,7 +372,7 @@ if __name__ == '__main__':
     print(data)
 
     # model_path = 'models/status_plant_type.pth'
-    # class_names_path = 'datasets/fruits_and_vegies/class_names.txt'  # TODO to be moved into a variable that is reachable from everywhere
+    # class_names_path = 'datasets/fruits_and_vegies/class_names.txt'
     # test_image = 'datasets/fruits_and_vegies/RottenTomatoVegetable/rottenTomato (1).jpg'
     # img = cv2.imread(test_image)
     #

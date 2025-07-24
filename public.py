@@ -4,6 +4,13 @@ import flet as ft
 import sensitive    # contains sensitive data, for that reason it is not included in the project
 
 
+
+class Config:
+    """Different non user controllable configurations"""
+    unnaceptable_accuracy = 85
+    minimum_confident_accuracy = 90
+    high_accuracy = 95
+
 class Debug:
     """
     Used for setting debug variables
@@ -52,3 +59,27 @@ class StandardControls:
         )
 
         return error_controls, error_text  # error text is returned also for better control
+
+    @staticmethod
+    def create_warning_controls(page):
+        text = ft.Text("", size=12, weight=ft.FontWeight.BOLD, color="orange")
+
+        def close_error(e):
+            # error_text.visible = False
+            controls.visible = False
+            page.update()
+
+        close_button = ft.IconButton(
+            icon=ft.Icons.CLOSE,
+            tooltip="Close",
+            on_click=close_error,
+            icon_color=ft.Colors.RED,
+        )
+
+        controls = ft.Row(
+            controls=[text, close_button],
+            alignment=ft.MainAxisAlignment.CENTER,
+            visible=False,
+        )
+
+        return controls, text  # text is returned also for better control
