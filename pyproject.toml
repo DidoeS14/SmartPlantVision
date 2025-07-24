@@ -1,0 +1,22 @@
+[project]
+name = "Smart PV"
+version = "1.0.0"
+description = ""
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+    { name = "Deyan Sofiykov", email = "dsofiykov@bfu.bg" }
+]
+dependencies = [
+    "flet",
+    "pyrebase"
+]
+
+[tool.flet]
+org = "Sofiykovi"
+product = "Smart Plants Vision"
+company = "Sofiykov"
+copyright = "Copyright (C) 2025 by Sofiykov"
+
+[tool.flet.app]
+path = "src"

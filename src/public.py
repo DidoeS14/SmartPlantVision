@@ -3,7 +3,7 @@ import pyrebase
 import flet as ft
 import sensitive    # contains sensitive data, for that reason it is not included in the project
 
-
+version = '1.0.0'
 
 class Config:
     """Different non user controllable configurations"""
@@ -15,7 +15,7 @@ class Debug:
     """
     Used for setting debug variables
     """
-    no_auth = True
+    no_auth = False
 
 
 class URLs:

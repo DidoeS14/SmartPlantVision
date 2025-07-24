@@ -6,10 +6,12 @@ from pages.register import register_view
 # from pages.info import info_view
 from pages.analyze import analyze_view
 
+from public import version
+
 
 # TODO: auth memory token in future
 def main(page: ft.Page):
-    page.title = "Smart PV"
+    page.title = f'Smart PV {version}'
 
     page.theme = ft.Theme(
         color_scheme=ft.ColorScheme(

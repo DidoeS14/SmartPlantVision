@@ -213,8 +213,8 @@ class ModelHandler:
 class Processor:
     models = {
         ModelHandler.STATUS_PLANT_TYPE: {
-            'model_path': 'models/status_plant_type.pth',
-            'classes_path': 'datasets/fruits_and_vegies/class_names.txt'
+            'model_path': '../models/status_plant_type.pth',
+            'classes_path': '../datasets/fruits_and_vegies/class_names.txt'
         }
     }
 
@@ -286,7 +286,7 @@ class Processor:
             f'Information might be wrong! Model confidence is ' \
             f'{spt_confidence}%' if spt_confidence < Config.minimum_confident_accuracy else ''
 
-        logger.debug('Collected all data so far')
+        logger.debug('Processed all data so far')
 
         if spt_confidence < Config.high_accuracy:
             self._collect_image_for_dataset(folder=f'{status}{plant}{type_}')
@@ -346,7 +346,7 @@ class Processor:
         Args:
             folder (str): The subfolder name where the image will be saved.
         """
-        base_path = 'collected_data'
+        base_path = '../../collected_data'
         subfolder_path = os.path.join(base_path, folder)
         os.makedirs(subfolder_path, exist_ok=True)
 
