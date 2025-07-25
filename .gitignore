@@ -2,4 +2,5 @@
 /google_colab
 /models
 /collected_data
+/build
 src/sensitive.py

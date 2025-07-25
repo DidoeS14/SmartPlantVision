@@ -91,7 +91,7 @@ class StandardControls:
         :param has_text: Creates the version without the text
         :return:
         """
-        source = 'assets/title.png' if has_text else 'assets/logo.png'
+        source = 'assets/title.png' if has_text else 'assets/icon.png'
         image = ft.Image(src=source, width=250)
         row = ft.Row(
             controls=[image],
