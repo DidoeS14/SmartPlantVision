@@ -26,7 +26,7 @@
    - The **detected plant**
    - A **summary of features**
    - Any **warnings or confidence levels**
-4. Additional facts about the plant are fetched from **Wikipedia**.
+   - Additional facts about the plant are fetched from **Wikipedia**.
 
 
 
@@ -38,8 +38,7 @@
 |-----------------|------------------------------|
 | `Flet`          | UI / frontend                |
 | `Firebase`      | Authentication               |
-| `Flask`         | Backend API (assumed)        |
-| `Wikipedia API` | Factual plant info           |
+| `Flask`         | Backend API                  |
 | `Python`        | Core logic & API integration |
 
 
@@ -80,7 +79,12 @@ To build the client side simply follow the flet build app build tutorial [here](
 The server doesn't need to be built, it is enough to be ran with python.
 
 ## 🔐 Notes on Data Collection
-The server collects a subset of user-submitted images inside a folder called "collected_data". This data helps us improve plant classification models and provide better accuracy in future versions.
+The server collects a subset of user-submitted images inside a folder
+called "collected_data". This dataset is intended to support ongoing 
+improvements to the plant classification models, enhancing their
+accuracy and robustness in future updates. It can also be used 
+to train your own models or contribute to the project by sharing 
+improvements via this repository.
 
 ## 🧪 Example Use Cases
 - Gardening apps
